@@ -1,0 +1,1 @@
+//eh a representação de um espaco na memoria de um computador
