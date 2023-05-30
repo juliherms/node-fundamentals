@@ -1,4 +1,5 @@
 import http from 'node:http' //nova forma de importacao no node
+import { json } from './middlewares/json.js'
 
 // criou um array de users para salvar os dados em memória
 const users = []
@@ -15,20 +16,8 @@ const server = http.createServer( async (req, res) => {
     //mostrou como extrair essas informacoes da requisicao
     const { method, url } = req
 
-    //cria um buffer
-    const buffers = []
-
-    //concatena o buffer
-    for await (const chunk of req) {
-        buffers.push(chunk)
-    }
-
-    //converte em json
-    try {
-        req.body = JSON.parse(Buffer.concat(buffers).toString())
-    } catch {
-        req.body = null
-    }
+    //chama middleware para resolver o buffer - intercepta a requisicao
+    await json(req, res)
 
     //Simula a resposta para um get users
     if (method === 'GET' && url === '/users'){
