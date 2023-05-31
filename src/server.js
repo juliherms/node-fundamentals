@@ -1,8 +1,8 @@
 import http from 'node:http' //nova forma de importacao no node
 import { json } from './middlewares/json.js'
+import { Database } from './database.js'
 
-// criou um array de users para salvar os dados em memória
-const users = []
+const database = new Database()
 
 // GET => Buscsr um rrecurso do bsck-end
 // POST => Crisr um recurso no back-end
@@ -21,12 +21,11 @@ const server = http.createServer( async (req, res) => {
 
     //Simula a resposta para um get users
     if (method === 'GET' && url === '/users'){
+        const users = database.select('users')
 
         //Conceito de EARLY return, o fato de ter um return dentro do if e sair do codigo
         //Retorna as informacoes do array
-        return res
-        .setHeader('Contenty-type','application/json')
-        .end(JSON.stringify(users))
+        return res.end(JSON.stringify(users))
     }
 
     //Simula o recebimento de uma requisicao post
@@ -35,11 +34,13 @@ const server = http.createServer( async (req, res) => {
         const { name, email } = req.body
 
         //Adiciona um usuario no array
-        users.push({
+        const user = {
             id: 1,
             mame: name,
             email: email
-        })
+        }
+
+        database.insert('users', user)
 
         //retorna o status code 201 - created
         return res.writeHead(201).end()
